@@ -42,9 +42,15 @@
                     <tr class="task">
                         <td class="task_object"><a href="{% url 'task_update' pk=task.id %}">{{task.title}}</a></td>
                         <td class="task_status">
-                            <form action="" method="post">
+                            <form action="{% url 'task_update' pk=task.id status=task.status %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" id="status_button">{{task.get_status_display}}</button>
+                                {% if task.status == 'W' %}
+                                    <button type="submit" class='status_button' id="waiting">{{task.get_status_display}}</button>
+                                {% elif task.status == 'S'  %}
+                                    <button type="submit" class='status_button' id="started">{{task.get_status_display}}</button>
+                                {% elif task.status == 'C'  %}
+                                    <button type="submit" class='status_button' id="complited">{{task.get_status_display}}</button>
+                                {% endif %}
                             </form>
                         </td>
                         <td>{{task.get_priority_display}}</td>

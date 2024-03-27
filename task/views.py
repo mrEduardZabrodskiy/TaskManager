@@ -45,14 +45,24 @@ def task_create(request):
 
 
 @login_required
-def task_update(request, pk):
+def task_update(request, pk, status=None):           
     task = get_object_or_404(Task, id=pk)
     if request.method == 'POST':
         form  = TaskForm(request.POST, instance=task)
+        if status:
+            if status == 'W':
+                task.status = Task.Status.STARTED
+                task.save()
+            elif status == 'S':
+                task.status = Task.Status.COMPLITED
+                task.save()
+            else:
+                task.status = Task.Status.WAITING
+                task.save()
         if form.is_valid():
             #form = form.cleaned_data
             form.save()
-            return HttpResponseRedirect(reverse('task_list'))
+        return HttpResponseRedirect(reverse('task_list'))
     else:
         if task.author != request.user:
             return HttpResponseRedirect(reverse('task_list'))

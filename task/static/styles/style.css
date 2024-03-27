@@ -143,14 +143,21 @@ table{
 .task_status{
     align-items: center;
 }
-#status_button{
+.status_button{
     margin: auto;
     width: 100%;
     height: 110%;
     border-radius: 5px;
-    border: 0;
-
-    
+    border: 0; 
+}
+#waiting{
+    background-color: grey;
+}
+#started{
+    background-color: yellow;
+}
+#complited{
+    background-color: green;
 }
 #status_button:hover{
     background-color: grey;
