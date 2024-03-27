@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tasks{% endblock  %}
+    
+{% block content %}
+    <div class="tools">
+        <div class="create_new">
+            <a href="{% url 'task_create' %}">Create new task</a>
+        </div>
+        <div class="search">
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="text" class='search_field' name="search" id="" placeholder="Search..">
+            </form>
+        </div>
+        <div class="filter">
+            <img src="{% static 'images/filter.png' %}" alt="">
+            <p>Filters</p>
+        </div>
+        <div class="sort">
+            <img src="{% static 'images/sort.png' %}" alt="">
+            <div class="dropdown">
+                <a href="{% url 'task_list'%}">Name</a>
+                <a href="#">Status</a>
+                <a href="#">Priority</a>
+                <a href="#">Date</a>
+            </div>
+            <p>Sort</p>
+        </div>
+    </div>
+    <div class="list">
+        {% if tasks %}
+            <table>
+                <tr>
+                    <th class="table_name">Name</th>
+                    <th cass="table_status">Status</th>
+                    <th cass="table_priority">Priority</th>
+                    <th cass="table_created">Created</th>
+                </tr> 
+                {% for task in tasks %}
+                    <tr class="task">
+                        <td class="task_object"><a href="{% url 'task_update' pk=task.id %}">{{task.title}}</a></td>
+                        <td class="task_status">
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <button type="submit" id="status_button">{{task.get_status_display}}</button>
+                            </form>
+                        </td>
+                        <td>{{task.get_priority_display}}</td>
+                        <td>{{task.created}}</td>
+                        <td><a href="{% url 'task_delete' pk=task.id %}"><img src="{% static 'images/delete.png' %}" alt=""></a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+        <h3>No tasks to list.</h3>
+        <p><a href="{% url 'task_create' %}">Create new task</a></p>
+        {% endif %}
+    </div>
+{% endblock  %}
