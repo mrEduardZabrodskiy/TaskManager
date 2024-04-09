@@ -25,29 +25,32 @@
                         {% endif %}
                     {% endif %}                 
                 </div>
-                <div class="alarm" style="float: right;">
-                    <a href="#">
-                        <img src="{% static 'images/alarm.png' %}" alt="">
-                    </a>
-                    <div class="dropdown">
-                        {% if alarm_messages %}
-                            {% for message in messages %}
-                                <a href="#">Some message</a>
-                            {% endfor %}
-                        {% endif %}
-                        <p>You don't have any message.</p>
+                
+                {% if user.is_authenticated %}                    
+                    <div class="alarm" style="float: right;">
+                        <a href="#">
+                            <img src="{% static 'images/alarm.png' %}" alt="">
+                        </a>
+                        <div class="dropdown">
+                            {% if alarm_messages %}
+                                {% for message in messages %}
+                                    <a href="#">Some message</a>
+                                {% endfor %}
+                            {% endif %}
+                            <p>You don't have any message.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="home">
-                    <a href="#">
-                        <img src="{% static 'images/home.png' %}" alt="">
-                    </a>
-                    <div class="dropdown">
-                        <a href="#">Account</a>
-                        <a href="#">Settings</a>
-                        <a href="{% url 'logout_view'%}">Logout</a>
+                    <div class="home">
+                        <a href="#">
+                            <img src="{% static 'images/home.png' %}" alt="">
+                        </a>
+                        <div class="dropdown">
+                            <a href="{% url 'account' pk=user.id %}">Account</a>
+                            <a href="{% url 'settings' %}">Settings</a>
+                            <a href="{% url 'logout_view'%}">Logout</a>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
         </nav>  
     {% endblock  %}

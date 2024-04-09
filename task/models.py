@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 # Create your models here.
 
@@ -27,10 +28,11 @@ class Task(models.Model):
     
     
     class Meta:
-        ordering = ['-created']
+        ordering = ['-created', 'author']
         indexes = [
             models.Index(fields=['-created']),
         ]
     
     def get_absolute_url(self):
         return self.title
+        #return reverse('task:task_update', args=[self.created.year, self.slug])

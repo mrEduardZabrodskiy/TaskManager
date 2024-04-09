@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Task
-from .forms import TaskForm, LoginForm, RegistrationForm
+from .forms import TaskForm, LoginForm, RegistrationForm, UserProfileForm, UserPasswordChange, PasswordResetForm, PasswordResetConfirmForm
 from django.utils.text import slugify
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
@@ -8,6 +8,13 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
 
 # Create your views here.
 
@@ -19,8 +26,7 @@ def task_list(request):
             .filter(title__contains=request.POST['search'])
         return render(request, 'task_list.html', {'tasks': tasks})
     elif request.method == 'GET':
-        tasks = Task.objects.filter(author=request.user)
-        
+        tasks = Task.objects.filter(author=request.user)      
         return render(request, 'task_list.html', {'tasks': tasks})
 
 
@@ -34,7 +40,8 @@ def task_create(request):
                 title = cd['title'],
                 description = cd['description'],
                 slug = slugify(cd['title']),
-                author = request.user
+                author = request.user,
+                priority = cd['priority']
             )
             new_task.save()
         return HttpResponseRedirect(reverse('task_list'))
@@ -84,6 +91,7 @@ def task_delete(request, pk):
     
    
 def login_view(request):
+    print(request.POST)
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('task_list'))
     else:
@@ -101,7 +109,7 @@ def login_view(request):
                     else:
                         return HttpResponse('Account is not active')
                 else:
-                    # учетка не создана
+                    messages.error(request, 'Invalid data ')
                     return HttpResponseRedirect(reverse('login_view'))
         else:
             form = LoginForm
@@ -134,3 +142,79 @@ def register_view(request):
         else:
             form = RegistrationForm
             return render(request, 'register.html', {'form': form})
+
+@login_required
+def account(request, pk):
+    user = get_object_or_404(User, id=request.user.id)
+    if request.method == 'POST':
+        pass
+    elif request.method == 'GET':
+        user_profile_form = UserProfileForm(instance=user)
+        return render(request, 'account.html', {'user_profile_form': user_profile_form})
+    
+@login_required
+def settings(request):
+    return render(request, 'settings.html', {})
+
+@login_required
+def password_change(request):
+    if request.method == 'POST':
+        form = UserPasswordChange(request.POST, user=request.user)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = User.objects.get(id=request.user.id)
+            user.set_password(cd['new_password'])
+            user.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Password hase been changed')
+            return HttpResponseRedirect(reverse('task_list'))
+        else:
+            messages.error(request, 'Invalid password')
+            return HttpResponseRedirect(reverse('password_change'))
+    elif request.method == 'GET':
+        form = UserPasswordChange
+        return render(request, 'password_change.html', {'form': form})
+    
+def password_reset(request):
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = User.objects.get(email=cd['email'])
+            current_path = request.path
+            uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+            token = default_token_generator.make_token(user)
+            host = request.get_host()
+            #url = reverse('', args=[uidb64, token])
+            url_parts = (host, current_path[1:-1], uidb64, token)
+            url = '/'.join(url_parts)
+            message=f'Tape to link and type your new password: {url}'
+            send_mail(
+                f"Reset your password",
+                message,
+                'mr.eduard.zabrodskiy@gmail.com',
+                [cd['email']]   
+            )
+            return HttpResponseRedirect(reverse('login_view'))
+    elif request.method == 'GET':
+        form = PasswordResetForm
+        return render(request, 'password_reset.html', {'form': form})
+
+
+def password_reset_confirm(request, uidb64, token):
+    user_id = urlsafe_base64_decode(uidb64).decode()
+    user = User.objects.get(id = user_id)
+    token = default_token_generator.check_token(user, token)
+    if request.method == 'POST':
+        print(request.POST)
+        form = PasswordResetConfirmForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user.set_password(cd['new_password'])
+            user.save()
+            return render(request, 'password_reset_confirm_done.html', {})
+    elif request.method == 'GET':
+        if user and token:
+            form = PasswordResetConfirmForm
+            return render(request, 'password_reset_confirm.html', {'form': form})
+    #ui = urlsafe_base64_decode(uidb64).decode()
