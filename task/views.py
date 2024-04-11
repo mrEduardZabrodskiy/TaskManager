@@ -19,15 +19,18 @@ from django.utils.encoding import force_bytes
 # Create your views here.
 
 @login_required
-def task_list(request):
-    print(request.POST)
+def task_list(request, sort=None, filters=None):
     if request.method == 'POST':
         tasks = Task.objects.filter(author=request.user)\
             .filter(title__contains=request.POST['search'])
         return render(request, 'task_list.html', {'tasks': tasks})
     elif request.method == 'GET':
-        tasks = Task.objects.filter(author=request.user)      
+        if sort:
+            tasks = Task.objects.filter(author=request.user).order_by(sort)
+        else:
+            tasks = Task.objects.filter(author=request.user)      
         return render(request, 'task_list.html', {'tasks': tasks})
+
 
 
 @login_required
@@ -49,6 +52,7 @@ def task_create(request):
     elif request.method == 'GET':
         form = TaskForm
         return render(request, 'task_create.html', {'form': form})
+
 
 
 @login_required
@@ -78,6 +82,7 @@ def task_update(request, pk, status=None):
     
     return render(request, 'task_update.html', {'form': form})
 
+  
   
 @login_required
 def task_delete(request, pk):
@@ -116,10 +121,12 @@ def login_view(request):
             return render(request, 'login.html', {'form': form})
     
                    
+
                
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('login_view'))
+
 
 
 def register_view(request):
@@ -143,6 +150,8 @@ def register_view(request):
             form = RegistrationForm
             return render(request, 'register.html', {'form': form})
 
+
+
 @login_required
 def account(request, pk):
     user = get_object_or_404(User, id=request.user.id)
@@ -151,10 +160,14 @@ def account(request, pk):
     elif request.method == 'GET':
         user_profile_form = UserProfileForm(instance=user)
         return render(request, 'account.html', {'user_profile_form': user_profile_form})
+ 
+ 
     
 @login_required
 def settings(request):
     return render(request, 'settings.html', {})
+
+
 
 @login_required
 def password_change(request):
@@ -174,6 +187,8 @@ def password_change(request):
     elif request.method == 'GET':
         form = UserPasswordChange
         return render(request, 'password_change.html', {'form': form})
+
+
     
 def password_reset(request):
     if request.method == 'POST':
@@ -185,7 +200,6 @@ def password_reset(request):
             uidb64 = urlsafe_base64_encode(force_bytes(user.id))
             token = default_token_generator.make_token(user)
             host = request.get_host()
-            #url = reverse('', args=[uidb64, token])
             url_parts = (host, current_path[1:-1], uidb64, token)
             url = '/'.join(url_parts)
             message=f'Tape to link and type your new password: {url}'
@@ -195,26 +209,36 @@ def password_reset(request):
                 'mr.eduard.zabrodskiy@gmail.com',
                 [cd['email']]   
             )
-            return HttpResponseRedirect(reverse('login_view'))
+            return render(request, 'password_reset_done.html', {})
     elif request.method == 'GET':
         form = PasswordResetForm
         return render(request, 'password_reset.html', {'form': form})
 
 
+
 def password_reset_confirm(request, uidb64, token):
     user_id = urlsafe_base64_decode(uidb64).decode()
-    user = User.objects.get(id = user_id)
+    user = get_object_or_404(User, id=user_id)
     token = default_token_generator.check_token(user, token)
     if request.method == 'POST':
-        print(request.POST)
-        form = PasswordResetConfirmForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user.set_password(cd['new_password'])
-            user.save()
-            return render(request, 'password_reset_confirm_done.html', {})
+        if user and token:
+            print('user and token')
+            form = PasswordResetConfirmForm(request.POST)
+            if form.is_valid():
+                cd = form.cleaned_data
+                user.set_password(cd['new_password'])
+                user.save()
+                return render(request, 'password_reset_confirm_done.html', {})
+            else:
+                messages.info(request, 'Somthing wrong')
+                return HttpResponseRedirect(reverse('login_view'))
+        else:
+            messages.error(request,'Invalid link')
+            return HttpResponseRedirect(reverse('login_view'))
     elif request.method == 'GET':
         if user and token:
             form = PasswordResetConfirmForm
             return render(request, 'password_reset_confirm.html', {'form': form})
-    #ui = urlsafe_base64_decode(uidb64).decode()
+        else:
+            messages.error(request, 'Invalid link')
+            return HttpResponseRedirect(reverse('login_view'))

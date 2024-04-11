@@ -27,7 +27,7 @@
         <div class="filter">
             <img src="{% static 'images/filter.png' %}" alt="">
             <p>Filters</p>
-            <div class="filter_tab">
+            <div class="dropdown">
                 <div class="filter_header">
                     <h2 class="filter_filter_by">Filter By</h2>
                 </div>
@@ -53,13 +53,17 @@
         </div>
         <div class="sort">
             <img src="{% static 'images/sort.png' %}" alt="">
-            <div class="dropdown">
-                <a href="{% url 'task_list'%}">Name</a>
-                <a href="#">Status</a>
-                <a href="#">Priority</a>
-                <a href="#">Date</a>
-            </div>
             <p>Sort</p>
+            <div class="dropdown">
+                <a href="{% url 'task_list' sort='title' %}">Name</a>
+                <a href="{% url 'task_list' sort='-title' %}">- Name</a>
+                <a href="{% url 'task_list' sort='status' %}">Status</a>
+                <a href="{% url 'task_list' sort='-status' %}">- Status</a>
+                <a href="{% url 'task_list' sort='priority' %}">Priority</a>
+                <a href="{% url 'task_list' sort='-priority' %}">-Priority</a>
+                <a href="{% url 'task_list' sort='date' %}">Date</a>
+                <a href="{% url 'task_list' sort='-date' %}">- Date</a>
+            </div>
         </div>
     </div>
     <div class="list">

@@ -49,9 +49,6 @@ a{
     background-color: rgb(118, 122, 126);
     border-radius: 5px;
 }
-.navbar .right_items .search_field{
-    padding-inline: 20px;
-}
 .navbar .right_items .alarm a img:hover{
     background-color: rgb(118, 122, 126);
     border-radius: 5px;
@@ -62,7 +59,6 @@ a{
     width: 200px;
     z-index: 1;
     right: 0;
-
 }
 .alarm:hover .dropdown{
     display: block;
@@ -108,8 +104,48 @@ a{
     margin: 10px
 }
 .filter{
+    position: relative;
     display: flex;
     margin: 10px;
+    padding: 5px;
+}
+.filter:hover{
+    background-color: grey;
+    border-radius: 5px;
+}
+.filter:hover .dropdown{
+    display: block;
+    background-color: grey;
+    padding: 5px;
+    margin-top: 40px;
+    border-radius: 5px;
+    width: fit-content;
+    flex: 1;
+}
+.filter_header h2{
+    display:inline;
+}
+.filter_contener{
+    display: flex;
+}
+.filter_status{
+    display: flex;
+}
+.filter_status h3{
+    display: inline;
+}
+.filter_status p{
+    display: block;
+}
+.filter_priority{
+    display: flex;
+}
+.filter_date{
+    display: flex;
+}
+.filter:hover .filter_tab{
+    display: block;
+    position: relative;
 }
 .filter p{
     margin: 5px;
@@ -117,9 +153,32 @@ a{
 .sort{
     display: flex;
     margin: 10px;
+    padding: 5px;
+    position: relative;
+    cursor: pointer;
+    height: auto;
+
 }
 .sort p{
     margin: 5px;
+}
+.sort:hover{
+    background-color: grey;
+    padding: 5px;
+    border-radius: 5px;
+}
+.sort:hover .dropdown{
+    position: absolute;
+    margin-top: 35px;
+    display: block;
+    background-color: gray;
+    padding: 5px;
+    border-radius: 5px;
+    border-top: 5px solid ;
+
+}
+.sort .dropdown a:hover{
+    background-color: rgb(78, 76, 76);
 }
 table{
     min-width: 600px;
@@ -165,6 +224,8 @@ table{
 .filter_tab{
     display: none;
 }
+
+
 
 ul.messages {
     margin:10px 100px;

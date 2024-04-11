@@ -12,16 +12,16 @@
     {% block header %}
         <nav class=navbar>
             <div class="logo">
-                <a href="{% url 'task_list' %}">Task manager</a>
+                <span><a href="{% url 'task_list' %}">Task manager</a></span>
             </div>
             <div class="right_items">
                 <div class="greeting">
                     
                     {% if user.is_authenticated %}                            
                         {% if user.first_name %}
-                            <p>Hello {{user.first_name}}</p>
-                            {% else %}
-                            <p>Hello {{user.username}}</p>
+                            <span>Hello {{user.first_name}}</span>
+                        {% else %}
+                            <span>Hello {{user.username}}</span>
                         {% endif %}
                     {% endif %}                 
                 </div>
