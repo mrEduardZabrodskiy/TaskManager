@@ -2,11 +2,30 @@
 
 
 {% block content %}
-    <h2>Create task</h2>
+<div class="task_create_block">
+    <div class="task_create_header">
+        <span>Create</span>
+    </div>
+    <div class="task_create_form">
         <form action="" method="post">
-            {{form.as_p}}
             {% csrf_token %}
-            <input type="submit" value="Create">
+            <div class="task_create_field">
+                {{form.title.label}}
+                {{form.title}}
+            </div>
+            <div class="task_create_field">
+                {{form.description.label}}
+                {{form.description}}
+            </div>
+            <div class="task_create_field">
+                {{form.priority.label}}
+                {{form.priority}}
+            </div>
+            <div class="task_create_submit_button">
+                <input type="submit" value="Create">
+            </div>
         </form>
+    </div>
+</div>
 {% endblock  %}
     

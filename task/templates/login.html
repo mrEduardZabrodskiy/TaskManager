@@ -1,24 +1,27 @@
 {% extends 'base.html' %}
 
 
+{% block back_button %}{% endblock  %}
+    
 {% block content %}
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li class="{{ message.tags }}">
-                    {{ message|safe }}
-                    <a href="#" class="close">x</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    <h1>Login</h1>
-    <form action="" method="post">
-        {{form.as_p}}
-        {% csrf_token %}
-        <input type="submit" value="Login">
-    </form>
-    <p>Forgot password? <a href="{% url 'password_reset' %}">Reset</a></p>
-    <p>Don't have an account? <a href="{% url 'register_view' %}">Sing up</a></p>
+    <div class="login_block">
+        <h1>Login</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="login_block_username">Username
+                {{form.username}}
+            </div>
+            <div class="login_block_password">Password
+                {{form.password}}
+            </div>
+            <input type="submit" value="Login">
+        </form>
+        <div class="forgot_reset_forms">
+            <p>Forgot password? <a href="{% url 'password_reset' %}">Reset</a></p>
+            <p>Don't have an account? <a href="{% url 'register_view' %}">Sing up</a></p>
+        </div>
+        
+    </div>
+    
 {% endblock  %}
     

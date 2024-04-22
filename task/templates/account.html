@@ -2,10 +2,52 @@
 
 
 {% block content %}
-    <form action="" method="post">
-        {{user_profile_form.as_p}}
-        <input type="submit" value="Save">
-        {% csrf_token %}
-    </form>
+    <div class="account_block">
+        <div class="account_block_header">
+            <span>Account</span>
+        </div>
+        <div class="user_info">
+            <div class="user_photo_block" >
+                <div class="image">
+                    {% if user_image.image %}
+                        <img src="{{user_image.image.url}}" alt="Users photo">
+                        
+                    {% endif %}
+                </div>
+                <div class="image_settings">
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="file" name="image" accept="image/*" id="id_image">
+                        <div class="submit_button">
+                            <input type="submit" value="Save">
+                        </div>
+                        
+                    </form>
+                </div>                
+            </div>
+            <div class="user_personal_info">
+                <span>Personal information</span>
+                <form action="" name="personal_info" method="post">
+                    {% csrf_token %}
+                    <div class="username">
+                        {{user_form.username.label}}
+                        {{user_form.username}}
+                    </div>
+                    <div class="first_name">
+                        {{user_form.first_name.label}}
+                        {{user_form.first_name}}
+                    </div>
+                    <div class="last_name">
+                        {{user_form.last_name.label}}
+                        {{user_form.last_name}}
+                    </div>
+                    <div class="submit_button">
+                        <input type="submit" value="Save">
+                    </div>
+                </form>
+
+            </div> 
+        </div>
+    </div>
 {% endblock  %}
     

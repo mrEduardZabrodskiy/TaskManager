@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="email_confirm_done_block">
+        <div class="email_confirm_done_header">
+            <span>Your email is confirmed.</span>
+        </div>
+        <span>Back to <a href="{% url 'task_list' %}">Task list</a></span>
+    </div>
+{% endblock  %}
+    
