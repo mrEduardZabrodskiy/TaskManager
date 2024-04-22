@@ -200,8 +200,8 @@ def account(request):
             if form.is_valid():
                 cd = form.cleaned_data
                 user_profile = UserProfile.objects.get(user=user)
-                print(user_profile.image)
-                if user_profile.image:
+                print(user_profile.image.url)
+                if user_profile.image and user_profile.image.url != '/media/users_images/user.png':
                     os.remove((os.path.join('MEDIA_ROOT', user_profile.image.path)))
                 user_profile.image = request.FILES['image']
                 user_profile.save()
@@ -213,8 +213,8 @@ def account(request):
         profile = get_object_or_404(UserProfile, user=user)
         profile_form = UserProfileForm(instance=profile)
         user_image = UserProfile.objects.get(user=request.user)
-        print(profile_form)
-        return render(request, 'account.html', {'user_form': user_form, 'profile_form': profile_form, 'user_image': user_image})
+        notifications = Notification.objects.filter(user=request.user)
+        return render(request, 'account.html', {'user_form': user_form, 'profile_form': profile_form, 'user_image': user_image, 'notifications': notifications, 'notifications_count': notifications.count()})
 
 
 
@@ -356,3 +356,7 @@ def password_reset_confirm(request, uidb64, token):
             return HttpResponseRedirect(reverse('login_view'))
         
         
+
+
+def handler404(request, exception):
+    return render(request, 'page_not_found.html', {})
